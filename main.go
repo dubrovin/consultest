@@ -13,7 +13,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	go server.Run()
+	go server.Run(os.Getenv("SERVICE_PORT"))
 	time.Sleep(time.Second)
 	_, _, err = consul.Service(os.Getenv("SERVICE_NAME"), os.Getenv("SERVICE_TAG"))
 
