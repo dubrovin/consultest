@@ -1,24 +1,26 @@
 package main
 
 import (
-	"github.com/dubrovin/consultest/server"
-	"bitbucket.infotech.team/gol/goconsul"
 	"fmt"
 	"time"
-	"os"
+
+	"bitbucket.infotech.team/gol/GoConsul"
+	"github.com/dubrovin/consultest/server"
 )
 
 func main() {
-	consul, err := GoConsul.NewConsulClient(os.Getenv("CONSUL_ADDR"))
+	consul, err := GoConsul.NewConsulClient("10.0.1.201:8500")
 	if err != nil {
 		fmt.Println(err)
 	}
-	go server.Run(os.Getenv("SERVICE_PORT"))
+	go server.Run(":8000")
 	time.Sleep(time.Second)
-	_, _, err = consul.Service(os.Getenv("SERVICE_NAME"), os.Getenv("SERVICE_TAG"))
+	entry, _, err := consul.Service("app1", "default")
 
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Printf("%v %v", entry[0].Service.Address, entry[0].Service.Port)
+	time.Sleep(time.Second * 60)
 
 }

@@ -1,0 +1,28 @@
+version: '2'
+
+services:
+  consul:
+    image: consul
+    network_mode: host
+    environment:
+      - "CONSUL_CLIENT_INTERFACE=enp1s0"
+      - "CONSUL_BIND_INTERFACE=enp1s0"
+      - "CONSUL_ALLOW_PRIVILEGED_PORTS=true"
+    command: agent -server -bootstrap-expect=1 -ui -dns-port=53 -recursor=8.8.8.8 
+    restart: always
+  registrator:
+    image: gliderlabs/registrator
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: -internal consul://10.0.1.201:8500
+
+  app1:
+    image: app1
+    dns:
+      - 10.0.1.201
+
+  app2:
+    image: app2
+    dns:
+      - 10.0.1.201
